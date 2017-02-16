@@ -4,110 +4,104 @@ import java.util.*;
 public class AffineBreakerApp {
 	
 	private Scanner infile;
-    private String cipherText;
-    private char[] cipherArray;
+    	private String cipherText;
+    	private char[] cipherArray;
 	private Scanner kbd;
 	private String input;
     
-	public AffineBreakerApp() throws IOException{
-		try {
-            // Open the input/output streams.
+public AffineBreakerApp() throws IOException{
+	try {
+          // Open the input/output streams
           infile = new Scanner(new FileReader("cipher2.txt"));
-      }              
-      catch (IOException exc) {
-            // Exit if a stream cannot be opened.
-            System.out.println(exc);
-            System.exit(1);
+        }              
+        catch (IOException exc) {
+          // Exit if a stream cannot be opened.
+          System.out.println(exc);
+          System.exit(1);
       }
-		
-		 // read the data from the text and store in the appropriate places
+	// read the data from the text and store in the appropriate places
         cipherText = infile.next();
         cipherArray = cipherText.toCharArray(); 
         System.out.println("Decrypting the cipher Text:");
         System.out.print("'");
-			for(int i=0;i<cipherArray.length;i++){
-				System.out.print(cipherArray[i]);
-		}
+	   for(int i=0;i<cipherArray.length;i++){
+		System.out.print(cipherArray[i]);
+	   }
 	System.out.print("'");
 	System.out.println("\n");		
 	this.keygen();
   }
-
-	//Prompts continuation and generates all key combinations
-	public void keygen(){
-		int inv = 0;
-		int b = 0;
-		int a = 0;
-		String input = "";
-		int [] av = {1,3,5,7,9,11,15,17,19,21,23,25};
-		char[] alpha = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-		char[] key= new char[26];
-		kbd = new Scanner(System.in);
-		while(!input.equalsIgnoreCase("s")){	
-			//loops a length of b
-			for(b = 1;b<26;b++){
-				//loops the length of a
-				for(int j = 0;j<av.length;j++){
-					inv = this.findInverse(av[j]);
-					//find the affine shift amount
-					for(int y = 0;y<26;y++){
-						int shift = (((inv * (y - b))%26)+26)%26;
-						key[y] = alpha[shift];
-					}
-					System.out.println("Encryption Key a = " + av[j] + " b = " + b);
-					System.out.println("Decryption Equation x = " + inv + " * (y - " + b +")\n");
-					System.out.println("Plain Text:");
-					this.decode(key,cipherArray);
-					System.out.println("\n \n");
-					System.out.print("Hit enter to continue search or 'S' key to stop ");
-					input = kbd.nextLine();
+//Prompts continuation and generates all key combinations
+public void keygen(){
+	int inv = 0;
+	int b = 0;
+	int a = 0;
+	String input = "";
+	int [] av = {1,3,5,7,9,11,15,17,19,21,23,25};
+	char[] alpha = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+	char[] key= new char[26];
+	kbd = new Scanner(System.in);
+	while(!input.equalsIgnoreCase("s")){	
+	//loops a length of b
+		for(b = 1;b<26;b++){
+		//loops the length of a
+			for(int j = 0;j<av.length;j++){
+				inv = this.findInverse(av[j]);
+				//find the affine shift amount
+				for(int y = 0;y<26;y++){
+					int shift = (((inv * (y - b))%26)+26)%26;
+					key[y] = alpha[shift];
+				}
+				System.out.println("Encryption Key a = " + av[j] + " b = " + b);
+				System.out.println("Decryption Equation x = " + inv + " * (y - " + b +")\n");
+				System.out.println("Plain Text:");
+				this.decode(key,cipherArray);
+				System.out.println("\n \n");
+				System.out.print("Hit enter to continue search or 'S' key to stop ");
+				input = kbd.nextLine();
 					if(input.equalsIgnoreCase("s")){a = av[j]; break;}
 				}
-				if(input.equalsIgnoreCase("s")){break;}		
+					if(input.equalsIgnoreCase("s")){break;}		
 			}		
 		}
-		System.out.println("");
-		System.out.println("The plain text below was encrypted with a = " + a + " and " + "b = " + b);
-		this.decode(key,cipherArray);
-	}
+	System.out.println("");
+	System.out.println("The plain text below was encrypted with a = " + a + " and " + "b = " + b);
+	this.decode(key,cipherArray);
+}
 	
-	//Find the inverse of a number mod 26
-	public int findInverse(int finv){
-		int flag = 0;
-		int inv = 0;
-		int a = finv;
-			for(int i =0;i<26;i++){
-				flag = (a * i) % 26;
-					if(flag == 1){
-						inv = i;
-					}
-			}
-		return inv;
-	}
+//Find the inverse of a number mod 26
+public int findInverse(int finv){
+	int flag = 0;
+	int inv = 0;
+	int a = finv;
+		for(int i =0;i<26;i++){
+			flag = (a * i) % 26;
+			if(flag == 1){inv = i;}
+		}
+	return inv;
+}
 	
-	//translates the cipher text from the key
-	public void decode(char[] k, char [] ct){
-		char[] alpha = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-		char[] result= new char[ct.length];
+//translates the cipher text from the key
+public void decode(char[] k, char [] ct){
+	char[] alpha = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+	char[] result= new char[ct.length];
 		for(int i = 0;i<ct.length;i++){
 			for(int j=0;j<26;j++){
-				if(ct[i] == alpha[j]){
-					result[i] = k[j];
-				}
+				if(ct[i] == alpha[j]){result[i] = k[j];}
 			}
 		}
-		this.printDecryption(result);	
-	}
-	//Print the decrypted message
-	public void printDecryption(char[] da){
-		for(int i=0;i<da.length;i++){
-			System.out.print(da[i]);
-		}
-	}
+	this.printDecryption(result);	
+}
 
-	public static void main(String[] args) throws IOException{
-		new AffineBreakerApp();
-
+//Print the decrypted message
+public void printDecryption(char[] da){
+	for(int i=0;i<da.length;i++){
+		System.out.print(da[i]);
 	}
+}
 
+public static void main(String[] args) throws IOException{
+	new AffineBreakerApp();
+
+}
 }
